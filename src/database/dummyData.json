@@ -1,0 +1,42 @@
+{
+  "users": [
+    {
+      "name": "Admin",
+      "email": "admin@qp.com",
+      "is_admin": true,
+      "password": "$2b$10$jKyqPT9e9D1ZhK8geoLXre1s1PlQYJIrXoHhDGkJCgxY0d0bLfb2o"
+    },
+    {
+      "name": "John",
+      "email": "john@qp.com",
+      "is_admin": false,
+      "password": "$2b$10$jKyqPT9e9D1ZhK8geoLXre1s1PlQYJIrXoHhDGkJCgxY0d0bLfb5K"
+    },
+    {
+      "name": "Wick",
+      "email": "wick@qp.com",
+      "is_admin": false,
+      "password": "$2b$10$jKyqPT9e9D1ZhK8geoLXre1s1PlQYJIrXoHhDGkJCgxY0d0bLfb5K"
+    },
+    {
+      "name": "Harry",
+      "email": "harry@qp.com",
+      "is_admin": false,
+      "password": "$2b$10$jKyqPT9e9D1ZhK8geoLXre1s1PlQYJIrXoHhDGkJCgxY0d0bLfb5K"
+    }
+  ],
+  "products": [
+    {
+      "name": "Product 1",
+      "quantity": 10,
+      "price": 10.99,
+      "status": true
+    },
+    {
+      "name": "Product 2",
+      "quantity": 20,
+      "price": 20.49,
+      "status": true
+    }
+  ]
+}
