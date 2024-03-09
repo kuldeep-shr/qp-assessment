@@ -5,9 +5,8 @@ import {
   verifyPassword,
 } from "../../middleware/commonMiddlewares";
 import UserModel from "../model/User";
-import { and } from "sequelize";
 
-export const insertUser = (data: User) => {
+export const insertUserService = (data: User) => {
   return new Promise(async (resolve, reject) => {
     // check email exist or not
     const emailExistency: any = await isEmailExists(data.email);
@@ -61,7 +60,7 @@ export const insertUser = (data: User) => {
   });
 };
 
-export const userLogin = (data: LoginRequest) => {
+export const userLoginService = (data: LoginRequest) => {
   return new Promise(async (resolve, reject) => {
     // check email exist or not
     const emailExistency: any = await isEmailExists(data.email);
@@ -136,31 +135,46 @@ const isEmailExists = async (email: string) => {
   });
 };
 
-export const fetchUserDetails = async (id: number): Promise<resolveTypes[]> => {
+export const fetchUserDetailService = (id: number): Promise<resolveTypes[]> => {
   return new Promise<resolveTypes[]>((resolve, reject) => {
-    UserModel.findByPk(id)
-      .then((data: any) => {
-        const userDetails: any = {
-          isError: false,
-          statusCode: 400,
-          message: "user information according to the primary id",
-          data: {
-            id: data.id,
-            name: data.name,
-            email: data.email,
-            password: data.password,
-            is_admin: data.is_admin,
-          },
-        };
-        return resolve(userDetails);
-      })
-      .catch((error) => {
-        return reject({
-          isError: true,
-          statusCode: 400,
-          message: "something went wrong, while fetching the user details",
-          data: [],
+    if (id == 0) {
+      UserModel.findAll()
+        .then((data: any) => {
+          const userDetails: any = data
+            ? data.map((items: any) => {
+                const { password, ...rest } = items.dataValues;
+                return rest;
+              })
+            : [];
+          return resolve(userDetails);
+        })
+        .catch((error) => {
+          return reject({
+            isError: true,
+            statusCode: 400,
+            message: "something went wrong, while fetching the user details",
+            data: [],
+          });
         });
-      });
+    } else {
+      UserModel.findByPk(id)
+        .then((data: any) => {
+          const userDetails: any = data
+            ? [data.dataValues].map((items: any) => {
+                const { password, ...rest } = items;
+                return rest;
+              })
+            : [];
+          return resolve(userDetails);
+        })
+        .catch((error) => {
+          return reject({
+            isError: true,
+            statusCode: 400,
+            message: "something went wrong, while fetching the user details",
+            data: [],
+          });
+        });
+    }
   });
 };

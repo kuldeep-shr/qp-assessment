@@ -1,13 +1,17 @@
 import httpStatusCodes from "http-status-codes";
 import { Request, Response } from "express";
 import apiResponse from "../../utils/apiResponse";
-import { insertUser, userLogin } from "../services/UserService";
+import {
+  insertUserService,
+  userLoginService,
+  fetchUserDetailService,
+} from "../services/UserService";
 
 export const loginUser = async (req: Request, res: Response) => {
   try {
     const { email, password } = req.body;
 
-    await userLogin({
+    await userLoginService({
       email: email,
       password: password,
     }).then((data: any) => {
@@ -29,9 +33,8 @@ export const loginUser = async (req: Request, res: Response) => {
 
 export const createUser = async (req: Request, res: Response) => {
   const { name, email, password, address } = req.body;
-  console.log("name", name, "email", email, "password", password);
   try {
-    await insertUser({
+    await insertUserService({
       name: name,
       password: password,
       email: email,
@@ -54,7 +57,32 @@ export const createUser = async (req: Request, res: Response) => {
       }
     });
   } catch (error: any) {
-    console.log("er", error);
+    return apiResponse.error(res, httpStatusCodes.BAD_REQUEST, error.message);
+  }
+};
+
+export const userList = (req: Request, res: Response) => {
+  let id: number = req.params.id ? Number(req.params.id) : 0;
+  console.log("the get Value", id);
+  try {
+    fetchUserDetailService(id).then((data: any) => {
+      if (data.statusCode != 400) {
+        return apiResponse.result(
+          res,
+          data.length == 0 ? "no any user exist" : "user details",
+          data,
+          httpStatusCodes.OK
+        );
+      } else {
+        return apiResponse.result(
+          res,
+          data.message,
+          data,
+          httpStatusCodes.BAD_REQUEST
+        );
+      }
+    });
+  } catch (error: any) {
     return apiResponse.error(res, httpStatusCodes.BAD_REQUEST, error.message);
   }
 };

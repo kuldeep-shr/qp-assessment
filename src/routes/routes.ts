@@ -2,34 +2,49 @@ import express from "express";
 const router = express.Router();
 
 import { verifyToken } from "../middleware/commonMiddlewares";
-import { createUser, loginUser } from "../users/controller/userController";
 import {
-  productInsertion,
-  updatingProducts,
+  createUser,
+  loginUser,
+  userList,
+} from "../users/controller/userController";
+import {
+  productInsert,
+  updateProduct,
+  deleteProduct,
 } from "../products/controller/productController";
 
 import {
-  userRegisterSchemaValidation,
-  userLoginSchemaValidation,
-} from "../validation/Login";
+  registerSchemaValidation,
+  loginSchemaValidation,
+} from "../validation/User";
 import {
-  productInsertionSchemaValidation,
-  productUpdationSchemaValidation,
+  productInsertSchemaValidation,
+  productUpdateSchemaValidation,
+  productDeleteSchemaValidation,
 } from "../validation/Product";
 
-router.post("/signup", userRegisterSchemaValidation, createUser);
-router.post("/signin", userLoginSchemaValidation, loginUser);
+router.post("/signup", registerSchemaValidation, createUser);
+router.post("/signin", loginSchemaValidation, loginUser);
+router.get("/users", verifyToken, userList);
+router.get("/users/:id", verifyToken, userList);
+
 router.post(
   "/add-product",
-  productInsertionSchemaValidation,
+  productInsertSchemaValidation,
   verifyToken,
-  productInsertion
+  productInsert
 );
 router.post(
   "/update-product",
-  productUpdationSchemaValidation,
+  productUpdateSchemaValidation,
   verifyToken,
-  updatingProducts
+  updateProduct
+);
+router.post(
+  "/delete-product",
+  productDeleteSchemaValidation,
+  verifyToken,
+  deleteProduct
 );
 
 export const allRoutes = router;

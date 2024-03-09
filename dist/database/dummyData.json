@@ -4,25 +4,25 @@
             "name": "Admin",
             "email": "admin@qp.com",
             "is_admin": true,
-            "password": "$2b$10$jKyqPT9e9D1ZhK8geoLXre1s1PlQYJIrXoHhDGkJCgxY0d0bLfb2o"
+            "password": "Iamadmin@1234"
         },
         {
             "name": "John",
             "email": "john@qp.com",
             "is_admin": false,
-            "password": "$2b$10$jKyqPT9e9D1ZhK8geoLXre1s1PlQYJIrXoHhDGkJCgxY0d0bLfb5K"
+            "password": "Iamuser1@1234"
         },
         {
             "name": "Wick",
             "email": "wick@qp.com",
             "is_admin": false,
-            "password": "$2b$10$jKyqPT9e9D1ZhK8geoLXre1s1PlQYJIrXoHhDGkJCgxY0d0bLfb5K"
+            "password": "Iamuser2@1234"
         },
         {
             "name": "Harry",
             "email": "harry@qp.com",
             "is_admin": false,
-            "password": "$2b$10$jKyqPT9e9D1ZhK8geoLXre1s1PlQYJIrXoHhDGkJCgxY0d0bLfb5K"
+            "password": "Iamuser3@1234"
         }
     ],
     "products": [

@@ -1,7 +1,7 @@
 import { ProductAdd, ProductUpdate } from "./types";
 import ProductModel from "../model/Product";
 
-export const productsInsertion = (data: any) => {
+export const productInsertService = (data: any) => {
   return new Promise(async (resolve, reject) => {
     const extractNames = data
       .filter((obj: any) => typeof obj.name === "string")
@@ -38,7 +38,7 @@ export const productsInsertion = (data: any) => {
   });
 };
 
-export const updateProducts = (updates: ProductUpdate[]) => {
+export const updateProductService = (updates: ProductUpdate[]) => {
   return new Promise(async (resolve, reject) => {
     try {
       const extractIds = updates.map((d: any) => d.id);
@@ -135,6 +135,44 @@ const findProductById = (id: number[]) => {
         return reject({
           isError: true,
           message: "something went wrong, while product searching",
+          data: [],
+        });
+      });
+  });
+};
+
+export const deleteProductService = (id: number[]) => {
+  return new Promise(async (resolve, reject) => {
+    // find product first
+    // delete it
+    const productExists: any = await findProductById(id);
+    const unmatchedIds = id.filter(
+      (id) => !productExists.data.some((item: any) => item.id === id)
+    );
+    if (unmatchedIds.length > 0) {
+      return resolve({
+        isError: false,
+        statusCode: 400,
+        message:
+          "product ids " + unmatchedIds + " is not exists in our grocery",
+        data: [],
+      });
+    }
+
+    ProductModel.destroy({
+      where: { id: id },
+    })
+      .then((data: any) => {
+        return resolve({
+          isError: false,
+          message: "product deleted successfully",
+          data: [],
+        });
+      })
+      .catch((error) => {
+        return reject({
+          isError: true,
+          message: "something went wrong, while product deleting",
           data: [],
         });
       });
