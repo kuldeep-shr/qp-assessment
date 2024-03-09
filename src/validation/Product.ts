@@ -25,7 +25,6 @@ export const productInsertionSchemaValidation = (
   next: NextFunction
 ) => {
   const data = req.body;
-  console.log("in validation of products", data);
   const { error } = productInsertionSchema.validate(data);
   if (error) {
     apiResponse.error(res, httpStatusCodes.UNPROCESSABLE_ENTITY, error.message);
@@ -36,23 +35,21 @@ export const productInsertionSchemaValidation = (
 
 const productUpdationSchema = Joi.array().items(
   Joi.object({
-    id: Joi.number().required().error(new Error("please enter the product id")),
+    id: Joi.number().required().error(new Error("Please enter the product id")),
     name: Joi.string()
       .min(5)
-      .required()
-      .error(new Error("please enter the valid product name")),
+      .when("id", { is: Joi.exist(), then: Joi.required() })
+      .error(new Error("Please enter the valid product name")),
     quantity: Joi.number()
-      .required()
-      .error(new Error("please enter the quantity")),
-    price: Joi.number().required().error(new Error("please enter the price")),
+      .when("id", { is: Joi.exist(), then: Joi.required() })
+      .error(new Error("Please enter the quantity")),
+    price: Joi.number()
+      .when("id", { is: Joi.exist(), then: Joi.required() })
+      .error(new Error("Please enter the price")),
     status: Joi.boolean()
-      .required()
-      .error(new Error("please enter the product status")),
-  })
-    .max(1)
-    .error(
-      new Error("at least one product property is required when id is provided")
-    )
+      .when("id", { is: Joi.exist(), then: Joi.required() })
+      .error(new Error("Please enter the product status")),
+  }).or("name", "quantity", "price", "status")
 );
 
 export const productUpdationSchemaValidation = (
@@ -61,7 +58,6 @@ export const productUpdationSchemaValidation = (
   next: NextFunction
 ) => {
   const data = req.body;
-  console.log("in validation of products", data);
   const { error } = productUpdationSchema.validate(data);
   if (error) {
     apiResponse.error(res, httpStatusCodes.UNPROCESSABLE_ENTITY, error.message);
