@@ -12,4 +12,9 @@ interface ProductUpdate {
   price?: number;
   status: boolean;
 }
-export { ProductAdd, ProductUpdate };
+
+interface ProductList {
+  id: number;
+  is_admin: boolean;
+}
+export { ProductAdd, ProductUpdate, ProductList };

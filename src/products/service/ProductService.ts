@@ -1,29 +1,43 @@
-import { ProductAdd, ProductUpdate } from "./types";
+import { ProductAdd, ProductUpdate, ProductList } from "./types";
 import ProductModel from "../model/Product";
 
 export const productInsertService = (data: any) => {
   return new Promise(async (resolve, reject) => {
-    const extractNames = data
+    const extractProductNames = data
       .filter((obj: any) => typeof obj.name === "string")
       .map((obj: any) => obj.name);
-    const productExists: any = await findProductByName(extractNames);
 
-    const getExistingName = productExists.data.map((d: any) => d.name);
-    if (productExists.data.length > 0) {
-      return resolve({
-        isError: false,
-        statusCode: 400,
-        message:
-          "products " + getExistingName + " already exist in our grocery",
-        data: [],
-      });
-    }
-    ProductModel.bulkCreate(data)
+    // gathering the data from database for existing ones
+    const productExistsFromDB: any = await findProductByName(
+      extractProductNames
+    );
+    const saveProductsToDB = data.filter(
+      (item: any) =>
+        !productExistsFromDB.data.some(
+          (dbItem: any) => dbItem.name === item.name
+        )
+    );
+
+    const matchedNames = data
+      .filter((item: any) =>
+        productExistsFromDB.data.some(
+          (dbItem: any) => dbItem.name === item.name
+        )
+      )
+      .map((item: any) => item.name);
+    ProductModel.bulkCreate(saveProductsToDB)
       .then((data) => {
         return resolve({
           isError: false,
           statusCode: 201,
-          message: "product inserted successfully",
+          message:
+            saveProductsToDB.length == 0
+              ? "product already exist in our grocery"
+              : matchedNames.length == 0
+              ? "product inserted successfully"
+              : "only this product is not inserted " +
+                matchedNames +
+                " remains inserted successfully",
           data: data,
         });
       })
@@ -176,5 +190,53 @@ export const deleteProductService = (id: number[]) => {
           data: [],
         });
       });
+  });
+};
+
+export const productListService = (args: ProductList) => {
+  return new Promise(async (resolve, reject) => {
+    // show only active products and according to the admin and user
+    if (args.id == 0) {
+      ProductModel.findAll({ where: { status: true } })
+        .then((data: any) => {
+          const productDetails: any =
+            data && args.is_admin
+              ? data.map((d: any) => {
+                  const { ...rest } = d.dataValues;
+                  return rest;
+                })
+              : [];
+          return resolve({ statusCode: 200, data: productDetails });
+        })
+        .catch((error) => {
+          return reject({
+            isError: true,
+            statusCode: 400,
+            message: "something went wrong, while fetching the product details",
+            data: [],
+          });
+        });
+    } else {
+      ProductModel.findOne({ where: { id: args.id, status: true } })
+        .then((data: any) => {
+          const productDetails: any =
+            data && args.is_admin
+              ? [data].map((d: any) => {
+                  const { ...rest } = d.dataValues;
+                  return rest;
+                })
+              : [];
+          return resolve({ statusCode: 200, data: productDetails });
+        })
+        .catch((error) => {
+          console.log("err", error);
+          return reject({
+            isError: true,
+            statusCode: 400,
+            message: "something went wrong, while fetching the product details",
+            data: [],
+          });
+        });
+    }
   });
 };

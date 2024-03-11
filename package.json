@@ -28,7 +28,8 @@
     "dev": "nodemon --watch 'src/**/*.ts' --exec 'npm run build && npm run start'",
     "guest-token": "ts-node ./src/guest_token/guestToken.ts",
     "create-table": "ts-node ./src/DATABASE/create_database.ts",
-    "sample-data": "ts-node ./src/DATABASE/sampleData.ts"
+    "sample-data": "ts-node ./src/DATABASE/sampleData.ts",
+    "truncate-table": "ts-node ./src/DATABASE/databaseAction.ts truncateProductTable"
   },
   "keywords": [
     "grocery-management",

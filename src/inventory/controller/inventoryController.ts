@@ -2,15 +2,14 @@ import apiResponse from "../../utils/apiResponse";
 import httpStatusCodes from "http-status-codes";
 import { Request, Response } from "express";
 import {
-  productInsertService,
-  updateProductService,
-  deleteProductService,
-  productListService,
-} from "../service/ProductService";
+  inventoryInsertService,
+  inventoryUpdateService,
+  inventoryDeleteService,
+} from "../service/InventoryService";
 import { userListService } from "../../users/services/UserService";
 
-export const productInsert = async (req: Request, res: Response) => {
-  let apiPayload = req.body.filter((d: any) => !d.user);
+export const inventoryInsert = async (req: Request, res: Response) => {
+  const apiPayload: any[] = req.body;
   const getDataOfUser: any = await userListService(req.body.user.id);
   if (!getDataOfUser[0].is_admin) {
     return apiResponse.result(
@@ -20,14 +19,14 @@ export const productInsert = async (req: Request, res: Response) => {
       httpStatusCodes.BAD_REQUEST
     );
   }
-  await productInsertService(apiPayload)
+  await inventoryInsertService(apiPayload)
     .then((data: any) => {
       if (data.statusCode != 400) {
         return apiResponse.result(
           res,
           data.message,
           data.data,
-          httpStatusCodes.OK
+          httpStatusCodes.CREATED
         );
       } else {
         return apiResponse.result(
@@ -42,8 +41,8 @@ export const productInsert = async (req: Request, res: Response) => {
       return apiResponse.error(res, httpStatusCodes.INTERNAL_SERVER_ERROR);
     });
 };
-
-export const updateProduct = async (req: Request, res: Response) => {
+export const inventoryUpdate = async (req: Request, res: Response) => {
+  const apiPayload: any[] = req.body;
   const getDataOfUser: any = await userListService(req.body.user.id);
   if (!getDataOfUser[0].is_admin) {
     return apiResponse.result(
@@ -53,14 +52,14 @@ export const updateProduct = async (req: Request, res: Response) => {
       httpStatusCodes.BAD_REQUEST
     );
   }
-  await updateProductService(req.body)
+  await inventoryUpdateService(apiPayload)
     .then((data: any) => {
       if (data.statusCode != 400) {
         return apiResponse.result(
           res,
           data.message,
           data.data,
-          httpStatusCodes.OK
+          httpStatusCodes.CREATED
         );
       } else {
         return apiResponse.result(
@@ -75,50 +74,23 @@ export const updateProduct = async (req: Request, res: Response) => {
       return apiResponse.error(res, httpStatusCodes.INTERNAL_SERVER_ERROR);
     });
 };
-
-export const deleteProduct = async (req: Request, res: Response) => {
-  const productIds = req.body;
-  await deleteProductService(productIds)
-    .then((data: any) => {
-      if (data.statusCode != 400) {
-        return apiResponse.result(
-          res,
-          data.message,
-          data.data,
-          httpStatusCodes.OK
-        );
-      } else {
-        return apiResponse.result(
-          res,
-          data.message,
-          data.data,
-          httpStatusCodes.BAD_REQUEST
-        );
-      }
-    })
-    .catch((error) => {
-      return apiResponse.error(res, httpStatusCodes.INTERNAL_SERVER_ERROR);
-    });
-};
-
-export const productList = async (req: Request, res: Response) => {
-  const productId: number = req.params.productId
-    ? Number(req.params.productId)
-    : 0;
+export const inventoryDelete = async (req: Request, res: Response) => {
+  const apiPayload: Array<number> = req.body;
   const getDataOfUser: any = await userListService(req.body.user.id);
-  console.log("new Product List", getDataOfUser, "productId", productId);
-
-  await productListService({
-    is_admin: getDataOfUser[0].is_admin,
-    id: productId,
-  })
+  if (!getDataOfUser[0].is_admin) {
+    return apiResponse.result(
+      res,
+      "only admin can add products",
+      [],
+      httpStatusCodes.BAD_REQUEST
+    );
+  }
+  await inventoryDeleteService(apiPayload)
     .then((data: any) => {
       if (data.statusCode != 400) {
         return apiResponse.result(
           res,
-          !getDataOfUser[0].is_admin
-            ? "you can't access the product list"
-            : data.message,
+          data.message,
           data.data,
           httpStatusCodes.OK
         );

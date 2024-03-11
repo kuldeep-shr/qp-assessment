@@ -135,7 +135,7 @@ const isEmailExists = async (email: string) => {
   });
 };
 
-export const fetchUserDetailService = (id: number): Promise<resolveTypes[]> => {
+export const userListService = (id: number): Promise<resolveTypes[]> => {
   return new Promise<resolveTypes[]>((resolve, reject) => {
     if (id == 0) {
       UserModel.findAll()

@@ -1,6 +1,7 @@
 import { Sequelize } from "sequelize";
 import UserModel from "../users/model/User";
 import ProductModel from "../products/model/Product";
+import InventoryModel from "../inventory/model/Inventory";
 import SampleData from "./dummyData.json";
 import { hashPassword } from "../middleware/commonMiddlewares";
 import * as dotenv from "dotenv";
@@ -12,18 +13,6 @@ const sequelize = new Sequelize({
   storage: String(process.env.DB_NAME),
 });
 
-let sampleDataForUser: any = SampleData;
-// sampleDataForUser.users = Promise.all(sampleDataForUser.users.map(async (data: any) => {
-//   const hashingPassword = await hashPassword(data.password);
-//   console.log("hashingPassword.....", data, hashingPassword);
-//   return {
-//     name: data.name,
-//     email: data.email,
-//     is_admin: data.is_admin,
-//     password: hashingPassword,
-//   };
-// }));
-
 function modifySampleUserData(obj: any) {
   return new Promise(async (resolve, reject) => {
     let pwd = await hashPassword(obj.password);
@@ -32,10 +21,8 @@ function modifySampleUserData(obj: any) {
 }
 
 let modifiedArray;
-
-Promise.all(
-  sampleDataForUser.users.map((obj: any) => modifySampleUserData(obj))
-)
+let sampleDataForInventory: any[] = [];
+Promise.all(SampleData.users.map((obj: any) => modifySampleUserData(obj)))
   .then((modifiedArrayResult) => {
     modifiedArray = modifiedArrayResult;
     console.log(modifiedArray);
@@ -44,15 +31,30 @@ Promise.all(
     throw new Error("something went wrong, while modifying the array");
   });
 
-console.log("modifiedArray", modifiedArray);
 // Function to insert sample data into the SQLite database
 async function insertSampleData() {
   try {
     await UserModel.sync({ force: true });
-    await UserModel.bulkCreate(sampleDataForUser.users);
+    await UserModel.bulkCreate(SampleData.users);
 
     await ProductModel.sync({ force: true });
-    await ProductModel.bulkCreate(sampleDataForUser.products);
+    await ProductModel.bulkCreate(SampleData.products);
+
+    const getProductData = await ProductModel.findAll();
+    if (getProductData) {
+      getProductData.map((d: any) => {
+        console.log("getProductData", d.dataValues);
+        return sampleDataForInventory.push({
+          product_id: d.dataValues.id,
+          remaining: d.dataValues.quantity,
+          booked: 0,
+        });
+      });
+      await InventoryModel.sync({ force: true });
+      await InventoryModel.bulkCreate(sampleDataForInventory);
+      console.log("sampleDataForInventory.......", sampleDataForInventory);
+    }
+
     console.log("Sample data inserted successfully");
   } catch (error) {
     console.error("Error inserting sample data:", error);

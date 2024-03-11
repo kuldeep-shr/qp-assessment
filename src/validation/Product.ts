@@ -17,10 +17,9 @@ const productInsertSchema = Joi.array().items(
       .required()
       .error(new Error("please enter the valid product name")),
     quantity: Joi.number()
-      .greater(0)
-      .required()
+      .greater(-1)
       .error(new Error("please enter the valid quantity")),
-    price: Joi.number().required().error(new Error("please enter the price")),
+    price: Joi.number().greater(0).error(new Error("please enter the price")),
     status: Joi.boolean()
       .required()
       .error(new Error("please enter the product status")),
@@ -45,15 +44,25 @@ const productUpdateSchema = Joi.array().items(
   Joi.object({
     id: Joi.number().required().error(new Error("please enter the product id")),
     name: Joi.string()
+      .min(1)
       .custom(customValidator)
       .error(new Error("please enter the valid product name")),
     quantity: Joi.number()
-      .greater(0)
+      .greater(-1)
       .custom(customValidator)
       .error(new Error("please enter the valid quantity")),
     price: Joi.number()
+      .greater(0)
       .custom(customValidator)
-      .error(new Error("please enter the price")),
+      .error(new Error("please enter the valid price")),
+    unit: Joi.number()
+      .greater(0)
+      .custom(customValidator)
+      .error(new Error("please enter the valid unit")),
+    unitPerPiece: Joi.number()
+      .greater(0)
+      .custom(customValidator)
+      .error(new Error("please enter the valid unit per price")),
     status: Joi.boolean().error(new Error("please pass true or false")),
   })
 );

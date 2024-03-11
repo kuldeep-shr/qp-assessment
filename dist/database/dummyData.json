@@ -27,15 +27,15 @@
     ],
     "products": [
         {
-            "name": "Product 1",
-            "quantity": 10,
-            "price": 10.99,
+            "name": "hajmola",
+            "quantity": 24,
+            "price": 8,
             "status": true
         },
         {
-            "name": "Product 2",
-            "quantity": 20,
-            "price": 20.49,
+            "name": "kurkure",
+            "quantity": 100,
+            "price": 10,
             "status": true
         }
     ]

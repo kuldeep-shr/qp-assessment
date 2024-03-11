@@ -2,36 +2,42 @@ import { DataTypes, Model } from "sequelize";
 import sequelize from "../../database/connection";
 import moment from "moment";
 
-class Product extends Model {
+class Booking extends Model {
   public id!: number;
-  public name!: string;
-  public quantity!: string;
+  public user_id!: number;
+  public product_id!: number;
+  public quantity!: number;
 }
 
-Product.init(
+/*
+    booking
+    - id
+    - user id
+    - product id
+    - quantity
+    - creation date
+    - updation date
+
+*/
+
+Booking.init(
   {
     id: {
       type: DataTypes.INTEGER,
       autoIncrement: true,
       primaryKey: true,
     },
-    name: {
-      type: DataTypes.TEXT,
-      allowNull: true,
-      unique: true, // one product at a time
-      defaultValue: null,
+    user_id: {
+      type: DataTypes.INTEGER,
+      defaultValue: 0,
+    },
+    product_id: {
+      type: DataTypes.INTEGER,
+      defaultValue: 0,
     },
     quantity: {
       type: DataTypes.INTEGER,
       defaultValue: 0,
-    },
-    price: {
-      type: DataTypes.FLOAT,
-      defaultValue: 0,
-    },
-    status: {
-      type: DataTypes.BOOLEAN,
-      defaultValue: false,
     },
     createdAt: {
       type: DataTypes.TIME,
@@ -48,9 +54,9 @@ Product.init(
     createdAt: true,
     updatedAt: true,
     sequelize,
-    modelName: "Product",
-    tableName: "products",
+    modelName: "Booking",
+    tableName: "bookings",
   }
 );
 
-export default Product;
+export default Booking;
