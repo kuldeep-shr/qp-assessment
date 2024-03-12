@@ -15,7 +15,10 @@ import {
   productDeleteSchemaValidation,
 } from "../validation/Product";
 
-import { bookingInsertSchemaValidation } from "../validation/Booking";
+import {
+  bookingInsertSchemaValidation,
+  bookingUpdateSchemaValidation,
+} from "../validation/Booking";
 import {
   inventoryInsertSchemaValidation,
   inventoryUpdateSchemaValidation,
@@ -27,6 +30,7 @@ import {
   createUser,
   loginUser,
   userList,
+  initialRoute,
 } from "../users/controller/userController";
 import {
   productInsert,
@@ -35,12 +39,17 @@ import {
   productList,
 } from "../products/controller/productController";
 
-import { bookingInsert } from "../booking/controller/bookingController";
+import {
+  bookingInsert,
+  bookingUpdate,
+} from "../booking/controller/bookingController";
 import {
   inventoryInsert,
   inventoryUpdate,
   inventoryDelete,
 } from "../inventory/controller/inventoryController";
+
+router.get("/", initialRoute);
 
 router.post("/signup", registerSchemaValidation, createUser);
 router.post("/signin", loginSchemaValidation, loginUser);
@@ -76,6 +85,12 @@ router.post(
   bookingInsert
 );
 
+router.post(
+  "/update-booking",
+  bookingUpdateSchemaValidation,
+  verifyToken,
+  bookingUpdate
+);
 router.post(
   "/create-inventory",
   inventoryInsertSchemaValidation,

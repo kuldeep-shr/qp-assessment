@@ -10,15 +10,28 @@ const sequelize = new Sequelize({
   storage: String(process.env.DB_NAME),
 });
 
-const truncateProductTable = async () => {
+// Function to insert sample data into the SQLite database
+async function truncateProductSampleData() {
   try {
-    await ProductModel.truncate();
-    console.log("successfully truncating of product table:");
+    ProductModel.truncate();
+    console.log("Product Sample data Truncate successfully");
   } catch (error) {
-    console.error("Error truncating of product table:", error);
+    console.error("Error inserting sample data:", error);
   } finally {
     await sequelize.close();
   }
-};
+}
 
-export { truncateProductTable };
+async function truncateUserSampleData() {
+  try {
+    UserModel.truncate();
+    console.log("User Sample data Truncate successfully");
+  } catch (error) {
+    console.error("Error inserting sample data:", error);
+  } finally {
+    await sequelize.close();
+  }
+}
+
+truncateUserSampleData();
+truncateProductSampleData();

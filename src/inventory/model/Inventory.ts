@@ -1,6 +1,7 @@
 import { DataTypes, Model } from "sequelize";
 import sequelize from "../../database/connection";
 import moment from "moment";
+import ProductModel from "../../products/model/Product";
 
 class Inventory extends Model {
   public id!: number;

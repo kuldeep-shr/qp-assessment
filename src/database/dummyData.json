@@ -38,5 +38,19 @@
       "price": 10,
       "status": true
     }
+  ],
+  "bookings": [
+    {
+      "product_id": 1,
+      "quantity": 2,
+      "user_id": 1,
+      "price": 16
+    },
+    {
+      "product_id": 2,
+      "quantity": 7,
+      "user_id": 1,
+      "price": 70
+    }
   ]
 }

@@ -1,5 +1,10 @@
 import { ProductAdd, ProductUpdate, ProductList } from "./types";
 import ProductModel from "../model/Product";
+import InventoryModel from "../../inventory/model/Inventory";
+import {
+  inventoryInsertService,
+  inventoryUpdateService,
+} from "../../inventory/service/InventoryService";
 
 export const productInsertService = (data: any) => {
   return new Promise(async (resolve, reject) => {
@@ -26,7 +31,20 @@ export const productInsertService = (data: any) => {
       )
       .map((item: any) => item.name);
     ProductModel.bulkCreate(saveProductsToDB)
-      .then((data) => {
+      .then(async (data) => {
+        console.log("Product Insert Data", data);
+        let UpdateInventory: any = [];
+        let parsedData = data.map((d: any) => d.dataValues);
+        parsedData.map((d: any) => {
+          UpdateInventory.push({
+            product_id: d.id,
+            remaining: d.quantity,
+            booked: 0,
+          });
+          return UpdateInventory;
+        });
+        console.log("UpdateInventory", UpdateInventory);
+        await inventoryInsertService(UpdateInventory);
         return resolve({
           isError: false,
           statusCode: 201,
@@ -61,17 +79,31 @@ export const updateProductService = (updates: ProductUpdate[]) => {
         (id) => !productExists.data.some((item: any) => item.id === id)
       );
       if (unmatchedIds.length > 0) {
-        return resolve({
+        resolve({
           isError: false,
           statusCode: 400,
           message:
             "product ids " + unmatchedIds + " is not exists in our grocery",
           data: [],
         });
+        return null;
       }
 
       await Promise.all(
-        updates.map(async (update) => {
+        updates.map(async (update: any) => {
+          if (update.hasOwnProperty("quantity")) {
+            let getInventoryData: any = await InventoryModel.findOne({
+              where: { product_id: update.id },
+            });
+            getInventoryData = getInventoryData.toJSON();
+            let UpdateInventory: any = [];
+            UpdateInventory.push({
+              id: getInventoryData.id,
+              remaining: update.quantity,
+              booked: 0,
+            });
+            await inventoryUpdateService(UpdateInventory);
+          }
           const product = await ProductModel.findByPk(update.id);
           if (!product) {
             throw new Error(`Product with ID ${update.id} not found`);

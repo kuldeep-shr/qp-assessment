@@ -14,7 +14,7 @@ export const inventoryInsert = async (req: Request, res: Response) => {
   if (!getDataOfUser[0].is_admin) {
     return apiResponse.result(
       res,
-      "only admin can add products",
+      "only admin can add the inventory items",
       [],
       httpStatusCodes.BAD_REQUEST
     );
@@ -47,7 +47,7 @@ export const inventoryUpdate = async (req: Request, res: Response) => {
   if (!getDataOfUser[0].is_admin) {
     return apiResponse.result(
       res,
-      "only admin can add products",
+      "only admin can update the inventory items",
       [],
       httpStatusCodes.BAD_REQUEST
     );
@@ -80,7 +80,7 @@ export const inventoryDelete = async (req: Request, res: Response) => {
   if (!getDataOfUser[0].is_admin) {
     return apiResponse.result(
       res,
-      "only admin can add products",
+      "only admin can delete the inventory items",
       [],
       httpStatusCodes.BAD_REQUEST
     );

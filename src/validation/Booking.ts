@@ -3,6 +3,13 @@ import httpStatusCodes from "http-status-codes";
 import { Request, Response, NextFunction } from "express";
 import apiResponse from "../utils/apiResponse";
 
+const customValidator = (value: any, helpers: any) => {
+  if (value === "" || value === 0 || value === undefined) {
+    return helpers.error("any.invalid");
+  }
+  return value;
+};
+
 const bookingInsertSchema = Joi.array().items(
   Joi.object({
     product_id: Joi.number()
@@ -22,6 +29,37 @@ export const bookingInsertSchemaValidation = (
 ) => {
   const data = req.body;
   const { error } = bookingInsertSchema.validate(data);
+  if (error) {
+    apiResponse.error(res, httpStatusCodes.UNPROCESSABLE_ENTITY, error.message);
+    return null;
+  }
+  next();
+};
+
+const bookingUpdateSchema = Joi.array().items(
+  Joi.object({
+    id: Joi.number()
+      .custom(customValidator)
+      .required()
+      .error(new Error("please enter the valid booking id")),
+    quantity: Joi.number()
+      .custom(customValidator)
+      .greater(-1)
+      .error(new Error("please enter the valid quantity")),
+    price: Joi.number()
+      .custom(customValidator)
+      .greater(0)
+      .error(new Error("please enter the valid price")),
+  })
+);
+
+export const bookingUpdateSchemaValidation = (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const data = req.body;
+  const { error } = bookingUpdateSchema.validate(data);
   if (error) {
     apiResponse.error(res, httpStatusCodes.UNPROCESSABLE_ENTITY, error.message);
     return null;

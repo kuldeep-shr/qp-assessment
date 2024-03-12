@@ -4,7 +4,7 @@ import { Request, Response, NextFunction } from "express";
 import apiResponse from "../utils/apiResponse";
 
 const customValidator = (value: any, helpers: any) => {
-  if (value === "" || value === 0 || value === undefined) {
+  if (value === "" || value === -1 || value === undefined) {
     return helpers.error("any.invalid");
   }
   return value;

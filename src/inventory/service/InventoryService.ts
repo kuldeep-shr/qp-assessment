@@ -1,6 +1,13 @@
 import InventoryModel from "../model/Inventory";
 import ProductModel from "../../products/model/Product";
-import { CreateInventory, UpdateInventory } from "./types";
+import {
+  CreateInventory,
+  UpdateInventory,
+  CheckInventory,
+  InventoryItem,
+  CheckInventoryArgs,
+  CheckInventoryReturn,
+} from "./types";
 
 export const inventoryInsertService = (args: Array<CreateInventory>) => {
   return new Promise(async (resolve, reject) => {
@@ -157,4 +164,60 @@ export const inventoryDeleteService = (args: Array<number>) => {
         });
       });
   });
+};
+
+export const checkInventoryService = async (
+  args: CheckInventoryArgs
+): Promise<CheckInventoryReturn> => {
+  const result: CheckInventory[] = [];
+
+  let inventoryProductRelationDB: any = await ProductModel.findAll({
+    attributes: ["id", "name", ["quantity", "productQty"]],
+    where: { id: args.productIdsArr },
+    include: [
+      {
+        model: InventoryModel,
+        attributes: { exclude: ["id", "product_id", "createdAt", "updatedAt"] },
+      },
+    ],
+  });
+  let inventoryData = inventoryProductRelationDB.map((d: any) => {
+    return {
+      product_id: d.dataValues.id,
+      name: d.dataValues.name,
+      productQty: d.dataValues.productQty,
+      inventory: d.Inventory.dataValues,
+    };
+  });
+  args.payload.forEach((request: any) => {
+    const product: InventoryItem | undefined | any = inventoryData.find(
+      (item: any) => item.product_id === request.product_id
+    );
+    if (
+      product.productQty == product.inventory.booked ||
+      request.quantity > product.inventory.remaining
+    ) {
+      return result.push({
+        product_id: product.product_id,
+        name: product.name,
+        quantity: "product is, out of stock",
+      });
+    }
+  });
+
+  if (result.length == 0) {
+    return {
+      isError: false,
+      statusCode: 200,
+      data: [],
+      message: "",
+    };
+  } else {
+    return {
+      isError: true,
+      statusCode: 400,
+      data: result,
+      message: "inventory errors, please read it given below",
+    };
+  }
 };

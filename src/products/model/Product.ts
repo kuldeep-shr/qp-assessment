@@ -1,5 +1,6 @@
 import { DataTypes, Model } from "sequelize";
 import sequelize from "../../database/connection";
+import InventoryModel from "../../inventory/model/Inventory";
 import moment from "moment";
 
 class Product extends Model {
@@ -52,5 +53,5 @@ Product.init(
     tableName: "products",
   }
 );
-
+Product.hasOne(InventoryModel, { foreignKey: "product_id" });
 export default Product;

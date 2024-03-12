@@ -86,3 +86,7 @@ export const userList = (req: Request, res: Response) => {
     return apiResponse.error(res, httpStatusCodes.BAD_REQUEST, error.message);
   }
 };
+
+export const initialRoute = (req: Request, res: Response) => {
+  return apiResponse.result(res, "GROCERY DESIGN API", [], httpStatusCodes.OK);
+};

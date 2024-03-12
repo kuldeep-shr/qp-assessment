@@ -48,7 +48,7 @@ export const updateProduct = async (req: Request, res: Response) => {
   if (!getDataOfUser[0].is_admin) {
     return apiResponse.result(
       res,
-      "only admin can add products",
+      "only admin can update the products",
       [],
       httpStatusCodes.BAD_REQUEST
     );
@@ -77,6 +77,16 @@ export const updateProduct = async (req: Request, res: Response) => {
 };
 
 export const deleteProduct = async (req: Request, res: Response) => {
+  const getDataOfUser: any = await userListService(req.body.user.id);
+  if (!getDataOfUser[0].is_admin) {
+    return apiResponse.result(
+      res,
+      "only admin can delete the products",
+      [],
+      httpStatusCodes.BAD_REQUEST
+    );
+  }
+
   const productIds = req.body;
   await deleteProductService(productIds)
     .then((data: any) => {
@@ -108,6 +118,7 @@ export const productList = async (req: Request, res: Response) => {
   const getDataOfUser: any = await userListService(req.body.user.id);
   console.log("new Product List", getDataOfUser, "productId", productId);
 
+  //
   await productListService({
     is_admin: getDataOfUser[0].is_admin,
     id: productId,

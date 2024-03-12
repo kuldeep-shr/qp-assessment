@@ -2,6 +2,7 @@ import { Sequelize } from "sequelize";
 import UserModel from "../users/model/User";
 import ProductModel from "../products/model/Product";
 import InventoryModel from "../inventory/model/Inventory";
+import BookingModel from "../booking/model/Booking";
 import SampleData from "./dummyData.json";
 import { hashPassword } from "../middleware/commonMiddlewares";
 import * as dotenv from "dotenv";
@@ -35,10 +36,10 @@ Promise.all(SampleData.users.map((obj: any) => modifySampleUserData(obj)))
 async function insertSampleData() {
   try {
     await UserModel.sync({ force: true });
-    await UserModel.bulkCreate(SampleData.users);
+    // await UserModel.bulkCreate(SampleData.users);
 
     await ProductModel.sync({ force: true });
-    await ProductModel.bulkCreate(SampleData.products);
+    // await ProductModel.bulkCreate(SampleData.products);
 
     const getProductData = await ProductModel.findAll();
     if (getProductData) {
@@ -51,7 +52,9 @@ async function insertSampleData() {
         });
       });
       await InventoryModel.sync({ force: true });
-      await InventoryModel.bulkCreate(sampleDataForInventory);
+      // await InventoryModel.bulkCreate(sampleDataForInventory);
+      await BookingModel.sync({ force: true });
+      // await BookingModel.bulkCreate(SampleData.bookings);
       console.log("sampleDataForInventory.......", sampleDataForInventory);
     }
 
