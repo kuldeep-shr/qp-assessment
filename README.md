@@ -24,10 +24,17 @@ Welcome to the Grocery Design API! This API provides endpoints to manage grocery
 **Sqlite:** RDBMS database for storing data. <br />
 **Sequelize ORM**: SQL modeling tool for Node.js. <br />
 **JWT:** JSON Web Tokens for user authentication and authorization.
+**Docker:** For containerize the application for scaling
 
 <br />
 
-# 🤝 Contributing
+---
+
+## API Endpoints:
+
+Soon, I'll update the postman collection
+
+## 🤝 Contributing
 
 Contributions are welcome! Please follow the contribution guidelines before submitting any pull requests.
 
