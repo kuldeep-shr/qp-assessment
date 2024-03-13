@@ -116,9 +116,6 @@ export const productList = async (req: Request, res: Response) => {
     ? Number(req.params.productId)
     : 0;
   const getDataOfUser: any = await userListService(req.body.user.id);
-  console.log("new Product List", getDataOfUser, "productId", productId);
-
-  //
   await productListService({
     is_admin: getDataOfUser[0].is_admin,
     id: productId,
@@ -127,9 +124,7 @@ export const productList = async (req: Request, res: Response) => {
       if (data.statusCode != 400) {
         return apiResponse.result(
           res,
-          !getDataOfUser[0].is_admin
-            ? "you can't access the product list"
-            : data.message,
+          data.message,
           data.data,
           httpStatusCodes.OK
         );

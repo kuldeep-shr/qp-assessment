@@ -1,7 +1,7 @@
 {
-  "name": "api",
+  "name": "grocery-management",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "app.ts",
   "license": "MIT",
   "dependencies": {
     "@types/body-parser": "^1.19.2",
@@ -25,12 +25,10 @@
     "build": "tsc",
     "prebuild": "rimraf dist/",
     "start": "node ./dist/app.js",
-    "start:docker": "npm run build && npm start",
+    "start:docker": "npm run build && npm start && npm run sample-data",
     "dev": "nodemon --watch 'src/**/*.ts' --exec 'npm run build && npm run start'",
-    "guest-token": "ts-node ./src/guest_token/guestToken.ts",
     "create-table": "ts-node ./src/DATABASE/create_database.ts",
-    "sample-data": "ts-node ./src/DATABASE/sampleData.ts",
-    "truncate-table": "ts-node ./src/DATABASE/databaseAction.ts truncateProductSampleData"
+    "sample-data": "ts-node ./src/DATABASE/sampleData.ts"
   },
   "keywords": [
     "grocery-management",

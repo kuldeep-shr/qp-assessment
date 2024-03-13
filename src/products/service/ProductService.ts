@@ -32,7 +32,6 @@ export const productInsertService = (data: any) => {
       .map((item: any) => item.name);
     ProductModel.bulkCreate(saveProductsToDB)
       .then(async (data) => {
-        console.log("Product Insert Data", data);
         let UpdateInventory: any = [];
         let parsedData = data.map((d: any) => d.dataValues);
         parsedData.map((d: any) => {
@@ -43,7 +42,6 @@ export const productInsertService = (data: any) => {
           });
           return UpdateInventory;
         });
-        console.log("UpdateInventory", UpdateInventory);
         await inventoryInsertService(UpdateInventory);
         return resolve({
           isError: false,
@@ -225,50 +223,97 @@ export const deleteProductService = (id: number[]) => {
   });
 };
 
-export const productListService = (args: ProductList) => {
-  return new Promise(async (resolve, reject) => {
-    // show only active products and according to the admin and user
-    if (args.id == 0) {
-      ProductModel.findAll({ where: { status: true } })
-        .then((data: any) => {
-          const productDetails: any =
-            data && args.is_admin
-              ? data.map((d: any) => {
-                  const { ...rest } = d.dataValues;
-                  return rest;
-                })
-              : [];
-          return resolve({ statusCode: 200, data: productDetails });
-        })
-        .catch((error) => {
-          return reject({
-            isError: true,
-            statusCode: 400,
-            message: "something went wrong, while fetching the product details",
-            data: [],
-          });
-        });
+export const productListService = async (args: ProductList) => {
+  try {
+    // check if person is admin or normal
+
+    if (args.is_admin) {
+      //ADMIN area
+      let whereCondition: any =
+        args.id == 0
+          ? {
+              include: [InventoryModel],
+            }
+          : {
+              where: { id: args.id },
+              include: [InventoryModel],
+            };
+
+      let inventoryProductData: any = await ProductModel.findAll(
+        whereCondition
+      );
+      const parsedData: any = inventoryProductData.map((product: any) => {
+        const parsedProduct = product.toJSON();
+        return { product: parsedProduct };
+      });
+      return {
+        isError: false,
+        statusCode: 200,
+        data: parsedData,
+        message: "grocery details",
+      };
     } else {
-      ProductModel.findOne({ where: { id: args.id, status: true } })
-        .then((data: any) => {
-          const productDetails: any =
-            data && args.is_admin
-              ? [data].map((d: any) => {
-                  const { ...rest } = d.dataValues;
-                  return rest;
-                })
-              : [];
-          return resolve({ statusCode: 200, data: productDetails });
-        })
-        .catch((error) => {
-          console.log("err", error);
-          return reject({
-            isError: true,
-            statusCode: 400,
-            message: "something went wrong, while fetching the product details",
-            data: [],
-          });
-        });
+      //User Area
+      let whereCondition: any =
+        args.id == 0
+          ? {
+              where: { status: true },
+              include: [InventoryModel],
+              attributes: { exclude: ["createdAt", "updatedAt", "status"] },
+            }
+          : {
+              where: { id: args.id, status: true },
+              include: [InventoryModel],
+              attributes: { exclude: ["createdAt", "updatedAt", "status"] },
+            };
+
+      let inventoryProductData: any = await ProductModel.findAll(
+        whereCondition
+      );
+      const parsedData: Array<{
+        id: number;
+        name: string;
+        quantity: number;
+        price: number;
+      }> = inventoryProductData.map((product: any) => {
+        const parsedProduct: any = product.toJSON() as Array<{
+          id: number;
+          name: string;
+          quantity: number;
+          price: number;
+        }>;
+        const inventory = (product as any).Inventory as {
+          id: number;
+          product_id: number;
+          remaining: number;
+          booked: number;
+          createdAt: string;
+          updatedAt: string;
+        } | null;
+
+        if (inventory && inventory.remaining === 0) {
+          parsedProduct.quantity = "out of stock";
+        } else if (inventory) {
+          parsedProduct.quantity = inventory.remaining;
+        }
+
+        delete parsedProduct.Inventory; // Remove the Inventory key from parsedProduct
+        return parsedProduct;
+      });
+
+      return {
+        isError: false,
+        statusCode: 200,
+        data: parsedData,
+        message: "grocery details",
+      };
     }
-  });
+  } catch (error) {
+    return {
+      isError: true,
+      statusCode: 400,
+      data: [],
+      message: "something went wrong, while grocery details fetching",
+    };
+  }
 };

@@ -15,10 +15,7 @@ import {
   productDeleteSchemaValidation,
 } from "../validation/Product";
 
-import {
-  bookingInsertSchemaValidation,
-  bookingUpdateSchemaValidation,
-} from "../validation/Booking";
+import { bookingInsertSchemaValidation } from "../validation/Booking";
 import {
   inventoryInsertSchemaValidation,
   inventoryUpdateSchemaValidation,
@@ -75,21 +72,14 @@ router.post(
   deleteProduct
 );
 
-router.get("/products", verifyToken, productList);
-router.get("/products/:productId", verifyToken, productList);
+router.get("/view-grocery", verifyToken, productList);
+router.get("/view-grocery/:productId", verifyToken, productList);
 
 router.post(
   "/create-booking",
   bookingInsertSchemaValidation,
   verifyToken,
   bookingInsert
-);
-
-router.post(
-  "/update-booking",
-  bookingUpdateSchemaValidation,
-  verifyToken,
-  bookingUpdate
 );
 router.post(
   "/create-inventory",

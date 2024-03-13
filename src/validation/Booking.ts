@@ -35,34 +35,3 @@ export const bookingInsertSchemaValidation = (
   }
   next();
 };
-
-const bookingUpdateSchema = Joi.array().items(
-  Joi.object({
-    id: Joi.number()
-      .custom(customValidator)
-      .required()
-      .error(new Error("please enter the valid booking id")),
-    quantity: Joi.number()
-      .custom(customValidator)
-      .greater(-1)
-      .error(new Error("please enter the valid quantity")),
-    price: Joi.number()
-      .custom(customValidator)
-      .greater(0)
-      .error(new Error("please enter the valid price")),
-  })
-);
-
-export const bookingUpdateSchemaValidation = (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
-  const data = req.body;
-  const { error } = bookingUpdateSchema.validate(data);
-  if (error) {
-    apiResponse.error(res, httpStatusCodes.UNPROCESSABLE_ENTITY, error.message);
-    return null;
-  }
-  next();
-};

@@ -26,7 +26,6 @@ let sampleDataForInventory: any[] = [];
 Promise.all(SampleData.users.map((obj: any) => modifySampleUserData(obj)))
   .then((modifiedArrayResult) => {
     modifiedArray = modifiedArrayResult;
-    console.log(modifiedArray);
   })
   .catch((error) => {
     throw new Error("something went wrong, while modifying the array");
@@ -36,15 +35,14 @@ Promise.all(SampleData.users.map((obj: any) => modifySampleUserData(obj)))
 async function insertSampleData() {
   try {
     await UserModel.sync({ force: true });
-    // await UserModel.bulkCreate(SampleData.users);
+    await UserModel.bulkCreate(SampleData.users);
 
     await ProductModel.sync({ force: true });
-    // await ProductModel.bulkCreate(SampleData.products);
+    await ProductModel.bulkCreate(SampleData.products);
 
     const getProductData = await ProductModel.findAll();
     if (getProductData) {
       getProductData.map((d: any) => {
-        console.log("getProductData", d.dataValues);
         return sampleDataForInventory.push({
           product_id: d.dataValues.id,
           remaining: d.dataValues.quantity,
@@ -52,10 +50,8 @@ async function insertSampleData() {
         });
       });
       await InventoryModel.sync({ force: true });
-      // await InventoryModel.bulkCreate(sampleDataForInventory);
+      await InventoryModel.bulkCreate(sampleDataForInventory);
       await BookingModel.sync({ force: true });
-      // await BookingModel.bulkCreate(SampleData.bookings);
-      console.log("sampleDataForInventory.......", sampleDataForInventory);
     }
 
     console.log("Sample data inserted successfully");

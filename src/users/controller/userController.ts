@@ -63,7 +63,6 @@ export const createUser = async (req: Request, res: Response) => {
 
 export const userList = (req: Request, res: Response) => {
   let id: number = req.params.id ? Number(req.params.id) : 0;
-  console.log("the get Value", id);
   try {
     userListService(id).then((data: any) => {
       if (data.statusCode != 400) {

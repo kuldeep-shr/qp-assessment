@@ -47,10 +47,6 @@ export const bookingInsertService = (args: Array<CreateBooking>) => {
               where: { product_id: d.product_id },
             });
             getInventoryData = getInventoryData.toJSON();
-            console.log(
-              "getInventoryData..... NINJA TECHNIQUES",
-              getInventoryData
-            );
             await inventoryUpdateService([
               {
                 id: getInventoryData.id,

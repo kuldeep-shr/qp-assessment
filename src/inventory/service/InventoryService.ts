@@ -36,7 +36,6 @@ export const inventoryInsertService = (args: Array<CreateInventory>) => {
       // else its exist and now check in inventory
       if (inventoryExistFromDB.length == 0) {
         // insertion
-        console.log("productExistsFromDB", productExistsFromDB);
 
         const saveProductsToDB: Array<CreateInventory> = args.filter(
           (item: any) =>
